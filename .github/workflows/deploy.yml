@@ -1,19 +1,39 @@
-name: Deploy to Azure Web App
+name: CI/CD – Deploy to Azure Web App
+
 on:
   push:
     branches:
-      - main
+      - main         # ou a branch que você deseja monitorar
 
 jobs:
-  deploy:
+  build-and-deploy:
     runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
 
-      - name: Deploy to Azure Web App
-        uses: azure/webapps-deploy@v2
-        with:
-          app-name: NOME_DO_SEU_APP
-          publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
-          package: .
+    steps:
+    - name: Checkout do código
+      uses: actions/checkout@v3
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '18.x'
+
+    - name: Instalar dependências
+      run: |
+        npm install
+
+    - name: Testar (opcional)
+      run: |
+        npm test
+
+    - name: Publicar no Azure Web App
+      uses: azure/webapps-deploy@v2
+      with:
+        app-name: testewebapprafael              # nome da sua Web App no Azure
+        slot-name: production                     # ou outro slot
+        publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
+        package: .                                # pasta raiz do seu app
+      env:
+        AZURE_STORAGE_ACCOUNT_NAME: testerafael   # já configurada no portal
+        AZURE_STORAGE_ACCOUNT_KEY: ${{ secrets.AZURE_STORAGE_ACCOUNT_KEY }}
+        AZURE_STORAGE_CONTAINER: teste1           # seu container
