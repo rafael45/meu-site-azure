@@ -1,4 +1,3 @@
-# .github/workflows/deploy.yml
 name: Deploy to Azure Web App
 on:
   push:
@@ -15,6 +14,7 @@ jobs:
       - name: Deploy to Azure Web App
         uses: azure/webapps-deploy@v2
         with:
-          app-name: NOME_DO_SEU_APP
+          app-name: NOME_DO_SEU_APP            # exato como aparece no Azure
+          # slot-name: staging                  # descomente se for um slot específico
           publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
           package: .
